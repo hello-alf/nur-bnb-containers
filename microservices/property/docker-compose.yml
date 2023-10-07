@@ -8,7 +8,7 @@ volumes:
 
 services:
   property-service:
-    image: isauranina/dotnetima
+    image: isauranina/imadotnet
     ports:
       - "8080:80"
       - "8081:443"
