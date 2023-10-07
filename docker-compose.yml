@@ -10,7 +10,7 @@ volumes:
 
 services:
   property-service:
-    image: isauranina/cluoddonet
+    image: isauranina/dotnetima
     ports:
       - "3001:80"
       - "8001:443"

@@ -8,9 +8,7 @@ volumes:
 
 services:
   property-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: isauranina/dotnetima
     ports:
       - "8080:80"
       - "8081:443"
