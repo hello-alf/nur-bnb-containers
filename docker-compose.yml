@@ -1,0 +1,84 @@
+version: "3"
+
+networks:
+  nur-bnb-net:
+
+volumes:
+  mssql-azuresql-edge-data: {}
+  mongo_booking_data: {}
+  mongo_review_data: {}
+
+services:
+  property-service:
+    image: isauranina/cluoddonet
+    ports:
+      - "3001:80"
+      - "8001:443"
+    depends_on:
+      - sqlserver
+    networks:
+      - nur-bnb-net
+
+  reviews-service:
+    image: brydanny/nestjs-microserv-review
+    environment:
+      - MONGO_PORT=27017
+      - MONGO_HOST=mongo-review
+    ports:
+      - "3002:3000"
+    depends_on:
+      - mongo-review
+    networks:
+      - nur-bnb-net
+
+  booking-service:
+    image: helloalf/microservice-booking
+    environment:
+      - MONGO_PORT=27017
+      - MONGO_HOST=mongo-booking
+    ports:
+      - "3003:3000"
+    depends_on:
+      - mongo-booking
+    networks:
+      - nur-bnb-net
+
+  sqlserver:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    cap_add: ["SYS_PTRACE"]
+    environment:
+      - "ACCEPT_EULA=1"
+      - "MSSQL_SA_PASSWORD=SU2orange!"
+    ports:
+      - "1433:1433"
+    hostname: mssql
+    volumes:
+      - mssql-azuresql-edge-data:/var/opt/mssql
+    networks:
+      - nur-bnb-net
+
+  mongo-review:
+    image: mongo:4.4.4
+    environment:
+      - MONGO_INITDB_DATABASE=review-db
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+    ports:
+      - "27018:27017"
+    networks:
+      - nur-bnb-net
+    volumes:
+      - mongo_review_data:/data/db
+
+  mongo-booking:
+    image: mongo:4.4.4
+    environment:
+      - MONGO_INITDB_DATABASE=nestjs_mongo
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    ports:
+      - "27019:27017"
+    networks:
+      - nur-bnb-net
+    volumes:
+      - mongo_booking_data:/data/db
